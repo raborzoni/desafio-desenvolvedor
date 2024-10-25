@@ -1,0 +1,254 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Documentação da API Oliveira Trust",
+        "description": "Esta é a documentação da API Oliveira Trust desenvolvida para upload, histórico de arquivos e busca de dados.",
+        "contact": {
+            "email": "seu_email@exemplo.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/upload": {
+            "post": {
+                "tags": [
+                    "Uploads"
+                ],
+                "summary": "Fazer o upload de um arquivo",
+                "description": "Este endpoint faz o upload de um arquivo no formato CSV ou Excel.",
+                "operationId": "uploadFile",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "file": {
+                                        "description": "Arquivo CSV ou Excel para ser enviado.",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Arquivo enviado com sucesso.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Arquivo enviado com sucesso!"
+                                        },
+                                        "upload": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erro na requisição.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Nenhum arquivo foi enviado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro no servidor.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro ao processar o upload do arquivo."
+                                        },
+                                        "details": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/history": {
+            "get": {
+                "tags": [
+                    "Uploads"
+                ],
+                "summary": "Buscar histórico de upload de arquivos",
+                "description": "Este endpoint retorna o histórico de arquivos enviados, podendo buscar por nome do arquivo ou data de referência.",
+                "operationId": "getUploadHistory",
+                "parameters": [
+                    {
+                        "name": "filename",
+                        "in": "query",
+                        "description": "Nome do arquivo para buscar no histórico.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Data de referência para buscar uploads.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de uploads retornada com sucesso.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Upload"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/search": {
+            "get": {
+                "tags": [
+                    "Uploads"
+                ],
+                "summary": "Buscar conteúdo do arquivo",
+                "description": "Este endpoint permite buscar informações contidas em um arquivo enviado, filtrando por TckrSymb e RptDt.",
+                "operationId": "searchContent",
+                "parameters": [
+                    {
+                        "name": "TckrSymb",
+                        "in": "query",
+                        "description": "Símbolo do ticker para buscar.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "RptDt",
+                        "in": "query",
+                        "description": "Data do relatório para buscar.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Conteúdo do arquivo retornado com sucesso.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "RptDt": {
+                                            "type": "string",
+                                            "example": "2024-08-22"
+                                        },
+                                        "TckrSymb": {
+                                            "type": "string",
+                                            "example": "AMZO34"
+                                        },
+                                        "MktNm": {
+                                            "type": "string",
+                                            "example": "EQUITY-CASH"
+                                        },
+                                        "SctyCtgyNm": {
+                                            "type": "string",
+                                            "example": "BDR"
+                                        },
+                                        "ISIN": {
+                                            "type": "string",
+                                            "example": "BRAMZOBDR002"
+                                        },
+                                        "CrpnNm": {
+                                            "type": "string",
+                                            "example": "AMAZON.COM, INC"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Upload": {
+                "title": "Upload",
+                "description": "Modelo de um upload",
+                "properties": {
+                    "id": {
+                        "description": "ID do upload",
+                        "type": "integer"
+                    },
+                    "file_name": {
+                        "description": "Nome do arquivo enviado",
+                        "type": "string"
+                    },
+                    "file_path": {
+                        "description": "Caminho do arquivo armazenado",
+                        "type": "string"
+                    },
+                    "uploaded_at": {
+                        "description": "Data e hora do upload",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "TckrSymb": {
+                        "description": "Símbolo do ticker (se aplicável)",
+                        "type": "string"
+                    },
+                    "RptDt": {
+                        "description": "Data do relatório (se aplicável)",
+                        "type": "string",
+                        "format": "date"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Uploads",
+            "description": "Uploads"
+        }
+    ]
+}
